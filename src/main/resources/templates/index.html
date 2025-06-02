@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Controle de Lâmpada</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .lampada {
+            width: 150px;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .lampada:hover {
+            transform: scale(1.05);
+        }
+
+        table {
+            margin-top: 30px;
+            width: 90%;
+            max-width: 700px;
+            background-color: white;
+            border-collapse: collapse;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+    <script>
+        function alternarLuz() {
+            fetch('/toggle', { method: 'POST' })
+                .then(() => location.reload());
+        }
+    </script>
+</head>
+<body>
+<h1>Controle de Lâmpada</h1>
+
+<img th:src="@{${ligado} ? '/lampada-on.png' : '/lampada-off.png'}"
+     class="lampada"
+     onclick="alternarLuz()" alt="Lâmpada" />
+
+<h2>Histórico de Ações</h2>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Ação</th>
+        <th>Data e Hora</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="log : ${logs}">
+        <td th:text="${log.id}">1</td>
+        <td th:text="${log.acao}">LIGAR</td>
+        <td th:text="${#temporals.format(log.dataHora, 'dd/MM/yyyy HH:mm:ss')}">01/06/2025 10:00</td>
+    </tr>
+    <button onclick="limparLogs()" style="margin-top: 10px; padding: 10px;">
+        Limpar Logs
+    </button>
+
+    <script>
+        function limparLogs() {
+            fetch('/limpar-logs', {
+                method: 'POST'
+            }).then(() => location.reload());
+        }
+    </script>
+
+    </tbody>
+</table>
+</body>
+</html>
